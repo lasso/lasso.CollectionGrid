@@ -2,6 +2,13 @@
 
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <Authors>Lars Olsson &lt;lasso@lassoweb.se&gt;</Authors>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Description>Slice and dice your collections on a 2-dimensional grid.</Description>
+        <PackageProjectUrl>https://github.com/lasso/lasso.CollectionGrid</PackageProjectUrl>
+        <PackageLicenseUrl>https://github.com/lasso/lasso.CollectionGrid/blob/develop/LICENSE</PackageLicenseUrl>
+        <RepositoryUrl>https://github.com/lasso/lasso.CollectionGrid</RepositoryUrl>
     </PropertyGroup>
 
 </Project>
