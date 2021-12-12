@@ -1,0 +1,7 @@
+.idea
+/_ReSharper.Caches/
+/packages/
+bin/
+obj/
+lasso.CollectionGrid.sln.DotSettings.user
+riderModule.iml
