@@ -197,8 +197,8 @@ namespace lasso.CollectionGrid.Test
 
             act2.Should().ThrowExactly<ArgumentOutOfRangeException>()
                 .WithMessage(
-                    "numColumns must be > 1. " +
-                    "(Parameter 'numColumns')" + Environment.NewLine +
+                    "numColumnsOrRows must be > 1. " +
+                    "(Parameter 'numColumnsOrRows')" + Environment.NewLine +
                     "Actual value was 1."
                 );
         }

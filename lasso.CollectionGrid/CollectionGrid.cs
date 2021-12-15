@@ -11,6 +11,8 @@ namespace lasso.CollectionGrid
 
         private readonly Dictionary<(int row, int column), T> _data = new();
 
+        private readonly GridExpandDimension _expandDimension = GridExpandDimension.Row;
+
         #endregion
 
         #region Properties
@@ -29,7 +31,7 @@ namespace lasso.CollectionGrid
         /// <summary>
         /// Returns the number of columns in the grid.
         /// </summary>
-        public int NumColumns { get; }
+        public int NumColumns { get; private set; }
 
         /// <summary>
         /// Returns the number of rows in the grid.
@@ -46,21 +48,11 @@ namespace lasso.CollectionGrid
 
         #region Constructors
 
-        /// <summary>
-        /// Creates a new CollectionGrid object.
-        /// </summary>
-        /// <param name="source">The elements that should be placed in the grid</param>
-        /// <param name="numColumns">
-        /// The number of columns the grid should have.
-        /// The number of rows will be automatically calculated by dividing the number elements
-        /// with the number of columns. 
-        /// </param>
-        /// <param name="direction">The direction of the grid</param>
-        /// <exception cref="ArgumentOutOfRangeException"></exception>
         public CollectionGrid(
             IEnumerable<T> source,
-            int numColumns,
-            GridDirection direction = GridDirection.Vertical
+            int numColumnsOrRows,
+            GridDirection direction = GridDirection.Vertical,
+            GridExpandDimension expandDimension = GridExpandDimension.Row
         )
         {
             var src = source.ToArray();
@@ -72,32 +64,20 @@ namespace lasso.CollectionGrid
                     "Source.Count must be > 0."
                 );
 
-            if (numColumns < 2)
+            if (numColumnsOrRows < 2)
                 throw new ArgumentOutOfRangeException(
-                    nameof(numColumns),
-                    numColumns,
-                    "numColumns must be > 1."
+                    nameof(numColumnsOrRows),
+                    numColumnsOrRows,
+                    "numColumnsOrRows must be > 1."
                 );
 
             Direction = direction;
 
-            NumColumns = numColumns;
+            _expandDimension = expandDimension;
 
-            switch (direction)
-            {
-                case GridDirection.Horizontal:
-                    BuildHorizontalGrid(src);
-                    break;
-                case GridDirection.Vertical:
-                    BuildVerticalGrid(src);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(
-                        nameof(direction),
-                        direction,
-                        "Invalid direction"
-                    );
-            }
+            SetupMaxDimension(numColumnsOrRows);
+
+            BuildGrid(src);
         }
 
         #endregion
@@ -182,7 +162,26 @@ namespace lasso.CollectionGrid
 
         #region PrivateMethods
 
-        private void BuildHorizontalGrid(IReadOnlyCollection<T> source)
+        private void BuildGrid(T[] source)
+        {
+            switch (Direction)
+            {
+                case GridDirection.Horizontal:
+                    BuildHorizontalGrid(source);
+                    break;
+                case GridDirection.Vertical:
+                    BuildVerticalGrid(source);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(
+                        nameof(Direction),
+                        Direction,
+                        "Invalid direction"
+                    );
+            }
+        }
+
+        private void BuildHorizontalGrid(T[] source)
         {
             var column = 1;
             var row = 1;
@@ -203,9 +202,9 @@ namespace lasso.CollectionGrid
             NumRows = row;
         }
 
-        private void BuildVerticalGrid(IReadOnlyCollection<T> source)
+        private void BuildVerticalGrid(T[] source)
         {
-            NumRows = (int)Math.Ceiling((decimal)source.Count / NumColumns);
+            NumRows = (int)Math.Ceiling((decimal)source.Length / NumColumns);
 
             var column = 1;
             var row = 1;
@@ -244,6 +243,25 @@ namespace lasso.CollectionGrid
         private bool ColumnIsValid(int column) => column > 0 && column <= NumColumns;
 
         private bool RowIsValid(int row) => row > 0 && row <= NumRows;
+
+        private void SetupMaxDimension(int numColumnsOrRows)
+        {
+            switch (_expandDimension)
+            {
+                case GridExpandDimension.Column:
+                    NumRows = numColumnsOrRows;
+                    break;
+                case GridExpandDimension.Row:
+                    NumColumns = numColumnsOrRows;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(
+                        "expandDimension",
+                        _expandDimension,
+                        "Invalid expand dimension"
+                    );
+            }
+        }
 
         #endregion
     }
